@@ -1,18 +1,23 @@
 const express = require("express")
 const PORT = process.env.PORT || 5000
 const {Pool} = require("pg")
+const path = require("path")
 
-const pool = new Pool({connectionString : process.env.DATABASE_URL})
+const indexRouter = require('./routers/index-router');
+
+const pool = new Pool({
+    user : process.env.PGUSER,
+    host : process.env.PGHOST,
+    database : process.env.PGDATABASE,
+    password : process.env.PGPASSWORD,
+    port : process.env.PGPORT
+})
 
 express()
-//   .use(express.static(path.join(__dirname, 'public')))
-//   .set('views', path.join(__dirname, 'views'))
-//   .set('view engine', 'ejs')
-  .get("/", (req, res) => {
-      res.send("dupa")
-  })
-  .get("/baza", async (req, res) => {
-    const result = await pool.query("SELECT table_name FROM information_schema.tables")
-    res.send(result.rows)
-})
+  .use(express.static(path.join(__dirname, 'public')))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+
+  .use('/', indexRouter)
+    
   .listen(PORT, () => console.log("Listening on ${ PORT }"))
