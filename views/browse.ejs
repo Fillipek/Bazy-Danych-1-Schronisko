@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+    <div class = "container rounded-top bg-primary text-center text-light p-2 ">
+        <h1>Przegląd tabeli</h1>
+    </div>
+    <div class = "container rounded-bottom bg-light p-2 h-100">
+        <table class="table text-dark">
+            <thead>
+                <tr>
+                    <% data.fields.forEach( field => { %>
+                        <th><%= field.name %></th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.rows.forEach(record => { %>
+                    <tr>
+                        <% let date, month, day, year %>
+                        <% data.fields.forEach( field => { %>
+                            <% if (field.name.search("Data") != -1 && record[field.name] != null) { 
+                                date = new Date(record[field.name])
+                                month = date.getUTCMonth() + 1
+                                day = date.getUTCDate()
+                                year = date.getUTCFullYear()
+                                if (month < 9) month = "0" + month
+                                if (day < 9) day = "0" + day
+                                date = year + "-" + month + "-" + day %>
+
+                                <td><%= date %></td>
+                            <% } else { %>
+                                <td><%= record[field.name] %></td>
+                            <% } %>
+                        <% }) %>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    
+</body>
+
+</html>
