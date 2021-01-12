@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+    <div class = "container rounded-top bg-primary text-center text-light p-2 ">
+        <h1>Raport</h1>
+        <h2>Wolne miejsca w poszczególnych pawilonach</h2>
+    </div>
+    <div class = "container rounded-bottom bg-light p-2 h-100">
+        <table class="table text-dark">
+            <thead>
+                <tr>
+                    <% raportPawilony.fields.forEach( field => { %>
+                        <th><%= field.name %></th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <% raportPawilony.rows.forEach(record => { %>
+                    <tr>
+                        <% let date, month, day, year %>
+                        <% raportPawilony.fields.forEach( field => { %>
+                            <td><%= record[field.name] %></td>
+                        <% }) %>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <br><br>
+
+    <% nazwyPaiwlonow.rows.forEach( pawilon => { %>
+        <div class = "container rounded-top bg-primary text-center text-light p-2 ">
+            <h2>Boksy w pawilonie: <%= pawilon["Nazwa pawilonu"]%></h2>
+        </div>
+        <div class = "container rounded-bottom bg-light p-2 h-100">
+            <table class="table text-dark">
+                <thead>
+                    <tr>
+                        <% raportBoksy.fields.forEach( field => { %>
+                            <% if (field.name != "Nazwa pawilonu") { %>
+                                <th><%= field.name %></th>
+                            <% } %>
+                        <% }) %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% raportBoksy.rows.forEach(record => { %>
+                        <tr>
+                            <% if (record["Nazwa pawilonu"] == pawilon["Nazwa pawilonu"]) { %>
+                                <% raportBoksy.fields.forEach( field => { %>
+                                    <% if (field.name != "Nazwa pawilonu") { %>
+                                        <td><%= record[field.name] %></td>
+                                    <% } %>
+                                <% }) %>
+                            <% } %>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        <br><br>
+    <% }) %>
+</body>
+
+</html>
