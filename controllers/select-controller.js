@@ -155,7 +155,7 @@ class SelectController {
     selectZamowienia = async (req, res) => {
         let result = await pool.query(
             'SELECT \
-            id_zamowienia AS "ID", \
+            id_zamowienia AS "ID zamówienia", \
             id_kontrahenta AS "ID kontrahenta", \
             id_przedmiotu AS "ID przedmiotu", \
             ilosc AS "Ilosc", \

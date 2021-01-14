@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <%- include("head")%>
+</head>
+<body>
+    <%- include("navbar")%>
+    
+    <div class = "container rounded-top bg-success text-center text-light p-2 w-75">
+        <h2>Wstawianie nowego rekoru do tabeli: <%= title%></h2>
+    </div>
+    <div class = "container rounded-bottom bg-light p-3 h-100 w-75">
+        <form action=<%= adressAfterInsert%> method="POST">
+
+            <% fieldsOnly.fields.forEach(field => { %>
+                <div class="form-group">
+                    <label for=<%= field.name%>></label><%= field.name%></label>
+                    <input type="text" class="form-control" name="<%= field.name%>" id=<%= field.name%>>
+                </div>
+            <% }) %>
+            <button type="submit" class="btn center btn-success">Wstaw</button>
+          </form>
+    </div>
+</body>
+</html>
