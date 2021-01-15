@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+        <div class="container rounded bg-danger text-center text-light p-2 w-75">
+            <h1>Błąd</h1>
+            <h5><%= msg%></h5>
+            <button onClick="window.history.back()" class="btn btn-secondary btn-lg">Powrót</button>
+        </div>
+</body>
+
+</html>

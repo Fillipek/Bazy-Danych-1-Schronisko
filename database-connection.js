@@ -9,9 +9,3 @@ const pool = new Pool({
 })
 
 module.exports = pool;
-
-// <%= stachu[1].imie%>
-// render = async (req, res) => {
-//     let result = await pool.query("SELECT * FROM schronisko.zwierzeta")
-//     res.render("about", { stachu : result.rows });
-// }
