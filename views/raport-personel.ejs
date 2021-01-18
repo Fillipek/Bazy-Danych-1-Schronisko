@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+    <div class="container rounded-top bg-primary text-center text-light p-2 ">
+        <h2>Raport</h2>
+        <h4>Pracownicy i wolontariusze oraz ich przydziały do pawilonów</h4>
+    </div>
+
+    <div class="container rounded-bottom bg-light text-center p-2 ">
+        <br>
+        <h4>Wszyscy pracownicy</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>PESEL</th>
+                    <th>Pensja</th>
+                    <th>Stanowisko</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% personel.rows.forEach(pracownik => { %>
+                    <tr>
+                        <td><%=pracownik.imie%></td>
+                        <td><%=pracownik.nazwisko%></td>
+                        <td><%=pracownik.pesel%></td>
+                        <td><%=pracownik.pensja%></td>
+                        <td><%=pracownik.stanowisko%></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <% personel.rows.forEach(pawilon => { %>
+        <% if (pawilon.nazwa != null) { %>
+            <br>
+            <div class="container rounded-top bg-primary text-center text-light p-2 ">
+                <h3>Pracownicy przypisani do pawilonu "<%=pawilon.nazwa%>"</h3>
+            </div>
+
+            <div class="container rounded-bottom bg-light text-center p-2 ">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Imię</th>
+                            <th>Nazwisko</th>
+                            <th>PESEL</th>
+                            <th>Pensja</th>
+                            <th>Stanowisko</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% personel.rows.forEach(pracownik => { %>
+                            <% if (pracownik.nazwa == pawilon.nazwa) { %>
+                                <tr>
+                                    <td><%=pracownik.imie%></td>
+                                    <td><%=pracownik.nazwisko%></td>
+                                    <td><%=pracownik.pesel%></td>
+                                    <td><%=pracownik.pensja%></td>
+                                    <td><%=pracownik.stanowisko%></td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    <% }) %>
+    
+    <br><br>
+    <div class="container rounded-top bg-secondary text-center text-light p-2 ">
+        <h4>Pracownicy i wolontariusze nieprzypisani do konkretnych pawilonów</h4>
+    </div>
+
+    <div class="container rounded-bottom bg-light text-center p-2 ">
+        <br>
+        <h4>Wszyscy pracownicy</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>PESEL</th>
+                    <th>Pensja</th>
+                    <th>Stanowisko</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% personel.rows.forEach(pracownik => { %>
+                    <% if (pracownik.nazwa == null) { %>
+                        <tr>
+                            <td><%=pracownik.imie%></td>
+                            <td><%=pracownik.nazwisko%></td>
+                            <td><%=pracownik.pesel%></td>
+                            <td><%=pracownik.pensja%></td>
+                            <td><%=pracownik.stanowisko%></td>
+                        </tr>
+                    <% } %>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

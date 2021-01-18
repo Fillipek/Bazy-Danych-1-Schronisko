@@ -25,10 +25,10 @@
                     <div class="input-group-prepend">
                         <input type="text" class="form-control" name="ulica" placeholder="Ulica">
                         <input type="text" class="form-control" name="kod_pocztowy" maxlength="6" pattern="[0-9][0-9]-[0-9][0-9][0-9]" placeholder="Kod pocztowy">
-                        <input type="text" pattern="[0-9]{11}" class="form-control" name="miasto" placeholder="Miejscowość">
+                        <input type="text" class="form-control" name="miasto" placeholder="Miejscowość">
                     </div>
                     <br>
-                    <input type="text" maxlength="11" class="form-control" name="pesel" placeholder="PESEL">
+                    <input type="text" maxlength="11" class="form-control" name="pesel" pattern="[0-9]{11}" placeholder="PESEL">
                     <br>
                     <button type="submit" class="btn center btn-lg btn-success">Dodaj nowego klienta</button>
                     <input type="hidden" name="id_wpisu" value="<%=id_wpisu%>">

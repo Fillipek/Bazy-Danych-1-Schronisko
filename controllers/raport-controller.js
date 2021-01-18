@@ -50,6 +50,23 @@ class SelectController {
             console.log("SELECT zwierząt nie udał się: " + err);
         }
     }
+
+    raportPersonel = async (req, res) => {
+        try
+        {
+            let personel = await pool.query(
+                "SELECT id_pawilonu, id_pracownika, imie, nazwisko, pesel, stanowisko,\
+                 CAST (pensja/100 AS NUMERIC(10,2)) AS \"pensja\", nazwa, typ, gatunek FROM schronisko.personel \
+                 LEFT JOIN schronisko.personel_to_pawilony USING(id_pracownika) \
+                 LEFT JOIN schronisko.pawilony USING(id_pawilonu)"
+            );
+            res.render("raport-personel", { personel : personel });
+        }
+        catch (err)
+        {
+            console.log(err);
+        }
+    }
 }
 
 module.exports = new SelectController();

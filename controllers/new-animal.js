@@ -2,11 +2,13 @@ const pool = require("../database-connection")
 
 class NewAnimal {
     showForm = async (req, res) => {
-        let v = await pool.query("SELECT DISTINCT gatunek FROM schronisko.pawilony ORDER BY gatunek");
+        let v = await pool.query("SELECT DISTINCT gatunek FROM schronisko.raport_pawilony WHERE miejsca_wolne > 0 ORDER BY gatunek");
         let adoptableSpecies = [];
+
         v.rows.forEach(elem => {
             adoptableSpecies.push(elem["gatunek"]);
         });
+        
         let boksy = await pool.query("SELECT * FROM schronisko.raport_boksy NATURAL JOIN schronisko.pawilony WHERE miejsca_wolne > 0 ORDER BY gatunek");
         res.render("new-animal", { 
             gatunki: adoptableSpecies,
@@ -71,12 +73,15 @@ class NewAnimal {
         }
         catch(err)
         {
-            pool.query("ROLLBACK");
-            await res.render("error", { msg : err });
+            await pool.query("ROLLBACK");
+            res.render("error", { msg : err });
             return;
         }
         
-        await res.render("success", { msg : "Pomyślnie dodano nowe zwierzę." });
+        await res.render("success", { 
+            msg : "Pomyślnie dodano nowe zwierzę.", 
+            anotherOne : "/form/new_animal" 
+        });
     }
 }
 

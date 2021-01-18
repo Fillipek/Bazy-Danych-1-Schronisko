@@ -57,7 +57,7 @@ class AdoptAnimal {
             if(req.body.miasto == "") errMsg = "Nie podano miejscowości.";
             if(req.body.pesel == "") errMsg = "Nie podano numeru PESEL.";
 
-            if(errMsg == "")
+            if(errMsg != "")
             {
                 res.render("error", {
                     msg : errMsg
@@ -71,7 +71,8 @@ class AdoptAnimal {
                 await pool.query(
                     "INSERT INTO schronisko.klienci (id_klienta, imie, nazwisko, ulica, kod_pocztowy, miasto, pesel)\
                      VALUES ($1,$2,$3,$4,$5,$6,$7)",
-                     [newId, req.doby.imie, req.body.nazwisko, req.body.ulica, req.body.kod_pocztowy, req.body.miasto, req.body.pesel]
+                     [req.body.id_klienta, req.body.imie, req.body.nazwisko, req.body.ulica, 
+                        req.body.kod_pocztowy, req.body.miasto, req.body.pesel]
                 );
             }
             catch(err)
