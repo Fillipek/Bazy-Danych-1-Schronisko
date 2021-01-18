@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+        <div class="container rounded-top bg-primary text-center text-light p-2 ">
+            <h2>Adoptuj zwierzaka</h2>
+            <h4>Formularz (strona 2) - wybór klienta</h4>
+        </div>
+        <div class="container rounded-bottom bg-light text-center text-dark p-2 ">
+            <h4 style="align-items:center">Wybierz z listy lub</h4>
+
+            <div class="border centered">
+                <form id="nowy_klient" action="/form/adopt_animal/finish" method="POST">
+                    <div class="input-group-prepend">
+                        <input type="text" class="form-control" name="imie" placeholder="Imię">
+                        <input type="text" class="form-control" name="nazwisko" placeholder="Nazwisko">
+                    </div>
+                    <br>
+                    <div class="input-group-prepend">
+                        <input type="text" class="form-control" name="ulica" placeholder="Ulica">
+                        <input type="text" class="form-control" name="kod_pocztowy" maxlength="6" pattern="[0-9][0-9]-[0-9][0-9][0-9]" placeholder="Kod pocztowy">
+                        <input type="text" pattern="[0-9]{11}" class="form-control" name="miasto" placeholder="Miejscowość">
+                    </div>
+                    <br>
+                    <input type="text" maxlength="11" class="form-control" name="pesel" placeholder="PESEL">
+                    <br>
+                    <button type="submit" class="btn center btn-lg btn-success">Dodaj nowego klienta</button>
+                    <input type="hidden" name="id_wpisu" value="<%=id_wpisu%>">
+                </form> 
+                <br>
+            </div>
+
+            <br>
+            <table class="table text-dark">
+                <thead>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>Adres</th>
+                    <th>PESEL</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                   <% klienci.rows.forEach(klient => { %>
+                        <tr>
+                            <td><%= klient.imie %> </td>
+                            <td><%= klient.nazwisko %> </td>
+                            <td><%= klient.adres %> </td>
+                            <td><%= klient.pesel %> </td>
+                            <form action="/form/adopt_animal/finish" method="POST">
+                                <td>
+                                    <input type="hidden" name="id_wpisu" value="<%=id_wpisu%>">
+                                    <button name="id_klienta" value="<%=klient.id_klienta%>" type="submit" class="btn center btn-success">Wybierz</button>
+                                </td>
+                            </form>
+                        </tr>
+                   <% }) %>
+                </tbody>
+            </table>
+        </div>
+        
+</body>
+
+</html>

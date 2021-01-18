@@ -10,7 +10,12 @@
         <div class="container rounded bg-success text-center text-light p-2 w-75">
             <h1>Sukces</h1>
             <h5><%= msg%></h5>
-            <button onClick="parent.location='/form/new_animal'" class="btn btn-secondary btn-lg">Dodaj nowe</button>
+            <% if (typeof hint !== 'undefined') { %>
+                <h6><%= hint%></h6>
+            <% } %>
+            <% if (typeof anotherOne !== 'undefined') { %>
+                <button onClick="parent.location='<%=anotherOne%>'" class="btn btn-secondary btn-lg">Jeszcze raz</button>
+            <% } %>
             <button onClick="parent.location='../../'" class="btn btn-secondary btn-lg">Powrót na stronę główną</button>
         </div>
 </body>

@@ -2,3 +2,10 @@ body {
     background-color : rgb(70, 72, 80);
     text-align : left;
 }
+
+.centered {
+    margin: auto;
+    width: 75%;
+    border: 1px solid green;
+    padding: 10px;
+  }

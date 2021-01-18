@@ -9,27 +9,32 @@
     <%- include("navbar")%>
 
     <div class="container rounded-top bg-primary text-center text-light p-2 ">
-        <h2>Raport</h2>
-        <h4>Zwierzęta przebywające w schronisku</h4>
+        <h2>Adoptuj zwierzaka</h2>
+        <h4>Formularz</h4>
+    </div>
+    <div class="container rounded-bottom bg-light text-center text-dark p-2 ">
+        <h4 style="text-align:center">Wybierz z listy dostępnych:</h4>
     </div>
 
-    <% pawilony.rows.forEach(pawilon => { %>
+    <% gatunki.rows.forEach(rekord => { %>
         <br>
         <div class="container rounded-top bg-primary text-center text-light p-2 ">
-            <h3>Pawilon "<%= pawilon.nazwa%>" - <%= pawilon.typ%> - <%= pawilon.gatunek%></h3>
+            <h3><%= rekord.gatunek%></h3>
         </div>
         <div class="container rounded-bottom bg-light text-center text-dark p-2 ">
             <table class="table text-dark">
                 <thead>
                     <th>Imię</th>
                     <th>Rasa</th>
+                    <th>Obency typ pawilonu</th>
                     <th>Data urodzenia</th>
                     <th>W schronisku od</th>
                     <th>Uwagi</th>
+                    <th></th>
                 </thead>
                 <tbody>
                     <% zwierzeta.rows.forEach(zwierze => { %>
-                        <% if (zwierze.id_pawilonu == pawilon.id_pawilonu) { %>
+                        <% if (zwierze.gatunek == rekord.gatunek) { %>
                             <tr>
                                 <td><%=zwierze.imie%></td>
                                 <td><%=zwierze.rasa%></td>
@@ -41,17 +46,21 @@
                                     let d2 = new Date([zwierze.data_przyjecia]);
                                     zwierze.data_przyjecia = d2.getUTCDate() + "-" + (d2.getUTCMonth()+1) + "-" + d2.getUTCFullYear();   
                                 } %>
+                                <td><%=zwierze.typ%></td>
                                 <td><%=zwierze.data_urodzenia%></td>
                                 <td><%=zwierze.data_przyjecia%></td>
                                 <td><%=zwierze.uwagi%></td>
+                                <form action="/form/adopt_animal/page_2" method="POST">
+                                    <td><button name="id_wpisu" value="<%=zwierze.id_wpisu%>" type="submit" class="btn center btn-success">Wybierz</button></td>
+                                </form>
                             </tr>
                         <% } %>
                     <% }) %>
                 </tbody>
             </table>
         </div>
-        
     <% }) %>
+        
 </body>
 
 </html>

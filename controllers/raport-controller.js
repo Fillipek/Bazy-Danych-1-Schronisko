@@ -31,27 +31,24 @@ class SelectController {
     }
 
     raportDoAdopcji = async (req, res) => {
-        let raport = await pool.query
-        (
-            'SELECT \
-            imie AS "Imię", \
-            gatunek AS "Gatunek", \
-            rasa AS "Rasa", \
-            DATE_PART(\'year\', NOW()) - DATE_PART(\'year\',data_urodzenia) AS "Lata", \
-            data_przyjecia AS "Data przyjęcia", \
-            nazwa AS "Pawilon", \
-            id_boksu AS "Boks" \
-            FROM schronisko.zwierzeta_info \
-            NATURAL JOIN schronisko.zwierzeta \
-            NATURAL JOIN schronisko.boksy \
-            NATURAL JOIN schronisko.pawilony \
-            WHERE data_adopcji IS NULL \
-            ORDER BY Gatunek, Rasa'
-        );
-        res.render("raport-do-adopcji", 
-        { 
-            data : raport
-        });
+        try
+        {
+            let zwierzeta = await pool.query(
+                "SELECT id_wpisu, imie, gatunek, rasa, data_urodzenia, data_przyjecia, uwagi, id_pawilonu FROM schronisko.zwierzeta \
+                 NATURAL JOIN schronisko.zwierzeta_info NATURAL JOIN schronisko.boksy NATURAL JOIN schronisko.pawilony WHERE data_adopcji IS NULL"
+            );
+            let pawilony = await pool.query(
+                "SELECT * FROM schronisko.raport_pawilony NATURAL JOIN schronisko.pawilony WHERE miejsca_wolne > 0"
+            )
+            res.render("raport-do-adopcji", { 
+                zwierzeta: zwierzeta,
+                pawilony : pawilony
+            });
+        }
+        catch(err)
+        {
+            console.log("SELECT zwierząt nie udał się: " + err);
+        }
     }
 }
 
