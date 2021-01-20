@@ -9,14 +9,14 @@ class PostInsertController {
             {
                 let result = await pool.query(
                     'INSERT INTO schronisko.pawilony VALUES (default, $1, $2, $3)', 
-                    [req.body['Nazwa'], req.body['Typ'], req.body['Gatunek']]
+                    [req.body['Nazwa'], req.body['ID typu'], req.body['Gatunek']]
                 );
             }
             else
             {
                 let result = await pool.query(
                     'INSERT INTO schronisko.pawilony VALUES ($1, $2, $3, $4)', 
-                    [req.body['ID pawilonu'], req.body['Nazwa'], req.body['Typ'], req.body['Gatunek']]
+                    [req.body['ID pawilonu'], req.body['Nazwa'], req.body['ID typu'], req.body['Gatunek']]
                 );
             }
         }
@@ -80,7 +80,7 @@ class PostInsertController {
             if(customKey == "") 
             {
                 let result = await pool.query(
-                    'INSERT INTO schronisko.klienci (imie, nazwisko, ulica, kod_pocztowy, miasto, pesel) \
+                    'INSERT INTO schronisko.klienci (imie, nazwisko, ulica, kod_pocztowy, miejscowosc, pesel) \
                      VALUES ($1, $2, $3, $4, $5, $6)', 
                     [req.body['Imię'], req.body['Nazwisko'], req.body['Ulica'], 
                     req.body['Kod pocztowy'], req.body['Miejscowość'], req.body['PESEL']]

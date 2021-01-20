@@ -20,7 +20,7 @@ class SelectController {
             id_klienta AS "ID", \
             imie AS "Imię", \
             nazwisko AS "Nazwisko", \
-            CONCAT(ulica, \', \', kod_pocztowy, \' \', miasto) AS "Adres", \
+            CONCAT(ulica, \', \', kod_pocztowy, \' \', miejscowosc) AS "Adres", \
             pesel AS "PESEL" \
             FROM schronisko.klienci'
         )
@@ -48,9 +48,9 @@ class SelectController {
     selectPawilony = async (req, res) => {
         let result = await pool.query(
             'SELECT \
-            id_pawilonu AS "ID", \
+            id_pawilonu AS "ID Pawilonu", \
             nazwa AS "Nazwa", \
-            typ AS "Typ", \
+            id_typu AS "ID typu", \
             gatunek AS "Gatunek" \
             FROM schronisko.pawilony'
         )

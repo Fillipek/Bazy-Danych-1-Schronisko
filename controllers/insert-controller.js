@@ -5,7 +5,7 @@ class InsertController {
         
         let fields = await pool.query
         (
-            'SELECT id_pawilonu "ID pawilonu", nazwa "Nazwa", typ "Typ", gatunek "Gatunek" \
+            'SELECT id_pawilonu "ID pawilonu", nazwa "Nazwa", id_typu "ID typu", gatunek "Gatunek" \
             FROM schronisko.pawilony WHERE FALSE'
         );
         res.render("insert", 
@@ -35,7 +35,7 @@ class InsertController {
         let fields = await pool.query
         (
             'SELECT id_klienta "ID klienta", imie "Imię", nazwisko "Nazwisko",\
-             ulica "Ulica", kod_pocztowy "Kod pocztowy", miasto "Miejscowość", pesel "PESEL" \
+             ulica "Ulica", kod_pocztowy "Kod pocztowy", miejscowosc "Miejscowość", pesel "PESEL" \
             FROM schronisko.klienci WHERE FALSE'
         );
         res.render("insert", 

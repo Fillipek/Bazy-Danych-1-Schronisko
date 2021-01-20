@@ -5,9 +5,9 @@ class AdoptAnimal {
         try
         {
             let adoptables = await pool.query(
-                "SELECT id_wpisu, imie, gatunek, rasa, typ, data_urodzenia, data_przyjecia, uwagi FROM schronisko.zwierzeta \
+                "SELECT id_wpisu, imie, gatunek, rasa, data_urodzenia, data_przyjecia, uwagi FROM schronisko.zwierzeta \
                  NATURAL JOIN schronisko.zwierzeta_info NATURAL JOIN schronisko.boksy NATURAL JOIN schronisko.pawilony \
-                 WHERE data_adopcji IS NULL AND typ NOT IN ('resocjalizacyjny', 'leczniczy', 'rehabilitacyjny')"
+                 WHERE data_adopcji IS NULL"
             );
             let species = await pool.query(
                 "SELECT DISTINCT gatunek FROM schronisko.zwierzeta NATURAL JOIN schronisko.zwierzeta_info WHERE data_adopcji IS NULL"
@@ -28,7 +28,7 @@ class AdoptAnimal {
         try
         {
             let customers = await pool.query(
-                "SELECT id_klienta, imie, nazwisko, CONCAT(ulica, ', ', kod_pocztowy, ' ', miasto) AS adres, pesel FROM  schronisko.klienci"
+                "SELECT id_klienta, imie, nazwisko, CONCAT(ulica, ', ', kod_pocztowy, ' ', miejscowosc) AS adres, pesel FROM  schronisko.klienci"
             );
             res.render("adopt-animal-page-2", {
                 id_wpisu : req.body.id_wpisu,

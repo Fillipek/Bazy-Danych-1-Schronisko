@@ -56,9 +56,10 @@ class SelectController {
         {
             let personel = await pool.query(
                 "SELECT id_pawilonu, id_pracownika, imie, nazwisko, pesel, stanowisko,\
-                 CAST (pensja/100 AS NUMERIC(10,2)) AS \"pensja\", nazwa, typ, gatunek FROM schronisko.personel \
+                 CAST (pensja/100 AS NUMERIC(10,2)) AS \"pensja\", p.nazwa, t.nazwa, gatunek FROM schronisko.personel \
                  LEFT JOIN schronisko.personel_to_pawilony USING(id_pracownika) \
-                 LEFT JOIN schronisko.pawilony USING(id_pawilonu)"
+                 LEFT JOIN schronisko.pawilony p USING(id_pawilonu)\
+                 LEFT JOIN schronisko.typ_pawilonu t USING(id_typu)"
             );
             res.render("raport-personel", { personel : personel });
         }
