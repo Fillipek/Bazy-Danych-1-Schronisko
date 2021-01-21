@@ -40,7 +40,7 @@ class SelectController {
             let pawilony = await pool.query(
                 "SELECT * FROM schronisko.raport_pawilony NATURAL JOIN schronisko.pawilony WHERE miejsca_wolne > 0"
             )
-            res.render("raport-do-adopcji", { 
+            res.render("raport-zwierzeta-w-schronisku", { 
                 zwierzeta: zwierzeta,
                 pawilony : pawilony
             });

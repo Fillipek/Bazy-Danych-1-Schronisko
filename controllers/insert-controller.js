@@ -5,10 +5,10 @@ class InsertController {
         
         let fields = await pool.query
         (
-            'SELECT id_pawilonu "ID pawilonu", nazwa "Nazwa", id_typu "ID typu", gatunek "Gatunek" \
+            'SELECT id_pawilonu "ID pawilonu", nazwa "Nazwa*", id_typu "ID typu*", gatunek "Gatunek*" \
             FROM schronisko.pawilony WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/pawilony",
             title : "Pawilony",
@@ -23,7 +23,7 @@ class InsertController {
              ilosc_miejsc "Ilość miejsc", id_pawilonu "ID pawilonu" \
             FROM schronisko.boksy WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/boksy",
             title : "Boksy",
@@ -38,7 +38,7 @@ class InsertController {
              ulica "Ulica", kod_pocztowy "Kod pocztowy", miejscowosc "Miejscowość", pesel "PESEL" \
             FROM schronisko.klienci WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/klienci",
             title : "Klienci",
@@ -53,7 +53,7 @@ class InsertController {
              ilosc "Ilość", min_ilosc "Minimalna ilość" \
              FROM schronisko.magazyn WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/magazyn",
             title : "Magazyn",
@@ -67,7 +67,7 @@ class InsertController {
             'SELECT id_wpisu "ID wpisu (zwierzęcia)", id_przedmiotu "ID przedmiotu", ilosc "Ilość" \
              FROM schronisko.zapotrzebowanie WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/zapotrzebowanie",
             title : "Zapotrzebowanie",
@@ -81,7 +81,7 @@ class InsertController {
             'SELECT id_kontrahenta "ID kontrahenta", nazwa "Nazwa", nip "NIP" \
              FROM schronisko.kontrahenci WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/kontrahenci",
             title : "Kontrahenci",
@@ -96,7 +96,7 @@ class InsertController {
              id_przedmiotu "ID przedmiotu", ilosc "Ilość", kwota "Kwota" \
              FROM schronisko.zamowienia WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/zamowienia",
             title : "Zamówienia",
@@ -111,7 +111,7 @@ class InsertController {
              pesel "PESEL", stanowisko "Stanowisko", pensja "Pensja" \
              FROM schronisko.personel WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/personel",
             title : "Personel",
@@ -120,16 +120,28 @@ class InsertController {
     }
 
     personelToPawilony = async (req, res) => {
-        let fields = await pool.query
-        (
-            'SELECT id_pracownika "ID pracownika", id_pawilonu "ID pawilonu" \
-             FROM schronisko.personel_to_pawilony WHERE FALSE'
-        );
-        res.render("insert", 
+        let personel, pawilony;
+        try
         {
-            adressAfterInsert : "/browse/personel_to_pawilony",
-            title : "Personel-Pawilony",
-            fieldsOnly : fields
+            personel = await pool.query
+            (
+                'SELECT * \
+                 FROM schronisko.personel'
+            );
+            pawilony = await pool.query
+            (
+                'SELECT id_pawilonu, p.nazwa, gatunek, t.nazwa as typ \
+                 FROM schronisko.pawilony p JOIN schronisko.typ_pawilonu t USING(id_typu)'
+            );
+        }
+        catch (err)
+        {
+            res.render("error", { msg : err });
+        }
+        res.render("inserts/personel_to_pawilony", 
+        {
+            personel : personel,
+            pawilony : pawilony
         });
     }
 
@@ -140,7 +152,7 @@ class InsertController {
              rasa "Rasa", imie "Imię", data_urodzenia "Data urodzenia" \
              FROM schronisko.zwierzeta WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/zwierzeta",
             title : "Zwierzęta",
@@ -155,7 +167,7 @@ class InsertController {
              id_boksu "ID boksu", uwagi "Uwagi", data_adopcji "Data adopcji", id_klienta "ID klienta" \
              FROM schronisko.zwierzeta_info WHERE FALSE'
         );
-        res.render("insert", 
+        res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/zwierzeta_info",
             title : "Wpisy Zwierząt",

@@ -1,29 +1,41 @@
+const { query } = require("../database-connection");
 const pool = require("../database-connection")
 
 class PostInsertController {
     pawilony = async (req, res) => {
-        let customKey = req.body['ID pawilonu'];
+        let key = req.body['ID pawilonu'];
         try
         {
-            if(customKey == "") 
+            if (key == "")
             {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.pawilony VALUES (default, $1, $2, $3)', 
-                    [req.body['Nazwa'], req.body['ID typu'], req.body['Gatunek']]
-                );
+                key = await pool.query("SELECT MAX(id_pawilonu)+1 AS max FROM schronisko.pawilony");
+                req.body['ID pawilonu'] = key.rows[0].max;
             }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.pawilony VALUES ($1, $2, $3, $4)', 
-                    [req.body['ID pawilonu'], req.body['Nazwa'], req.body['ID typu'], req.body['Gatunek']]
-                );
-            }
+        }
+        catch(err)
+        {
+            req.body['ID pawilonu'] = 1;
+        }
+
+        try
+        {
+            await pool.query(
+                'INSERT INTO schronisko.pawilony (id_pawilonu, nazwa, id_typu, gatunek) VALUES ($1, $2, $3, $4)', 
+                [req.body['ID pawilonu'], req.body['Nazwa*'], req.body['ID typu*'], req.body['Gatunek*']]
+            );
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
+            return;
         }
+
+        res.render("success", 
+        {
+            msg: "Pomyślnie dodano nowy pawilon (ID = " + req.body['ID pawilonu'] + ")",
+            hint: "Pawilon nie zawiera obcnie żdnych boksów. Dodaj je poprzez Wstawianie/Nowy boks.",
+            anotherOne : "/insert/pawilony"
+        });
 
         let table = await pool.query(
             'SELECT \
@@ -60,7 +72,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let table = await pool.query(
@@ -98,7 +110,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query('SELECT \
@@ -136,7 +148,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -163,7 +175,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -200,7 +212,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -237,7 +249,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -278,7 +290,7 @@ class PostInsertController {
             );
         }
         catch (err) {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -305,13 +317,13 @@ class PostInsertController {
                  (id_pracownika, id_pawilonu) VALUES \
                  ($1, $2)',
                 [
-                    values["ID pracownika"],
-                    values["ID pawilonu"]
+                    values.pracownik,
+                    values.pawilon
                 ]
             );
         }
         catch (err) {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -351,7 +363,7 @@ class PostInsertController {
         }
         catch (err)
         {
-            console.log(err);
+            res.render("error", { msg : err});
         }
 
         let result = await pool.query(
@@ -389,7 +401,7 @@ class PostInsertController {
             );
         }
         catch (err) {
-            console.log(err);
+            res.render("error", { msg : err });
         }
 
         let result = await pool.query(
