@@ -19,8 +19,8 @@ class InsertController {
     boksy = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_boksu "ID boksu", numer "Numer",\
-             ilosc_miejsc "Ilość miejsc", id_pawilonu "ID pawilonu" \
+            'SELECT id_boksu "ID boksu", numer "Numer*",\
+             ilosc_miejsc "Ilość miejsc*", id_pawilonu "ID pawilonu*" \
             FROM schronisko.boksy WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -34,8 +34,8 @@ class InsertController {
     klienci = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_klienta "ID klienta", imie "Imię", nazwisko "Nazwisko",\
-             ulica "Ulica", kod_pocztowy "Kod pocztowy", miejscowosc "Miejscowość", pesel "PESEL" \
+            'SELECT id_klienta "ID klienta", imie "Imię*", nazwisko "Nazwisko*",\
+             ulica "Ulica*", kod_pocztowy "Kod pocztowy*", miejscowosc "Miejscowość*", pesel "PESEL*" \
             FROM schronisko.klienci WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -49,8 +49,8 @@ class InsertController {
     magazyn = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_przedmiotu "ID przedmiotu", nazwa "Nazwa",\
-             ilosc "Ilość", min_ilosc "Minimalna ilość" \
+            'SELECT id_przedmiotu "ID przedmiotu", nazwa "Nazwa*",\
+             ilosc "Ilość*", min_ilosc "Minimalna ilość" \
              FROM schronisko.magazyn WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -64,7 +64,7 @@ class InsertController {
     zapotrzebowanie = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_wpisu "ID wpisu (zwierzęcia)", id_przedmiotu "ID przedmiotu", ilosc "Ilość" \
+            'SELECT id_wpisu "ID wpisu (zwierzęcia)*", id_przedmiotu "ID przedmiotu*", ilosc "Ilość*" \
              FROM schronisko.zapotrzebowanie WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -78,7 +78,7 @@ class InsertController {
     kontrahenci = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_kontrahenta "ID kontrahenta", nazwa "Nazwa", nip "NIP" \
+            'SELECT id_kontrahenta "ID kontrahenta", nazwa "Nazwa*", nip "NIP" \
              FROM schronisko.kontrahenci WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -92,8 +92,8 @@ class InsertController {
     zamowienia = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_zamowienia "ID zamówienia", id_kontrahenta "ID kontrahenta",\
-             id_przedmiotu "ID przedmiotu", ilosc "Ilość", kwota "Kwota" \
+            'SELECT id_zamowienia "ID zamówienia", id_kontrahenta "ID kontrahenta*",\
+             id_przedmiotu "ID przedmiotu*", ilosc "Ilość*", kwota "Kwota*" \
              FROM schronisko.zamowienia WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -107,8 +107,8 @@ class InsertController {
     personel = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_pracownika "ID pracownika", imie "Imię", nazwisko "Nazwisko",\
-             pesel "PESEL", stanowisko "Stanowisko", pensja "Pensja" \
+            'SELECT id_pracownika "ID pracownika", imie "Imię*", nazwisko "Nazwisko*",\
+             pesel "PESEL", stanowisko "Stanowisko*", pensja "Pensja" \
              FROM schronisko.personel WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -125,8 +125,7 @@ class InsertController {
         {
             personel = await pool.query
             (
-                'SELECT * \
-                 FROM schronisko.personel'
+                'SELECT * FROM schronisko.personel'
             );
             pawilony = await pool.query
             (
@@ -148,8 +147,8 @@ class InsertController {
     zwierzeta = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_zwierzecia "ID zwierzęcia", gatunek "Gatunek", \
-             rasa "Rasa", imie "Imię", data_urodzenia "Data urodzenia" \
+            'SELECT id_zwierzecia "ID zwierzęcia", gatunek "Gatunek*", \
+             rasa "Rasa", imie "Imię*", data_urodzenia "Data urodzenia" \
              FROM schronisko.zwierzeta WHERE FALSE'
         );
         res.render("inserts/generic", 
@@ -163,14 +162,14 @@ class InsertController {
     zwierzetaInfo = async (req, res) => {
         let fields = await pool.query
         (
-            'SELECT id_wpisu "ID wpisu", id_zwierzecia "ID zwierzęcia", data_przyjecia "Data przyjęcia",\
-             id_boksu "ID boksu", uwagi "Uwagi", data_adopcji "Data adopcji", id_klienta "ID klienta" \
+            'SELECT id_wpisu "ID wpisu", id_zwierzecia "ID zwierzęcia*", data_przyjecia "Data przyjęcia*",\
+             id_boksu "ID boksu*", uwagi "Uwagi", data_adopcji "Data adopcji", id_klienta "ID klienta" \
              FROM schronisko.zwierzeta_info WHERE FALSE'
         );
         res.render("inserts/generic", 
         {
             adressAfterInsert : "/browse/zwierzeta_info",
-            title : "Wpisy Zwierząt",
+            title : "Zwierzęta info",
             fieldsOnly : fields
         });
     }

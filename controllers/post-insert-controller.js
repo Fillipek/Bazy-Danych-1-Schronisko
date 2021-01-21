@@ -1,318 +1,330 @@
-const { query } = require("../database-connection");
 const pool = require("../database-connection")
 
 class PostInsertController {
-    pawilony = async (req, res) => {
-        let key = req.body['ID pawilonu'];
-        try
-        {
-            if (key == "")
-            {
-                key = await pool.query("SELECT MAX(id_pawilonu)+1 AS max FROM schronisko.pawilony");
-                req.body['ID pawilonu'] = key.rows[0].max;
-            }
+    fixSequence = async function (idFieldName, tableName) {
+        let max;
+        try {
+            max = await pool.query("SELECT MAX(" + idFieldName + ") max FROM schronisko." + tableName);
+            max = max.rows[0].max;
         }
-        catch(err)
-        {
-            req.body['ID pawilonu'] = 1;
+        catch (err) {
+            max = 0;
         }
 
-        try
-        {
-            await pool.query(
-                'INSERT INTO schronisko.pawilony (id_pawilonu, nazwa, id_typu, gatunek) VALUES ($1, $2, $3, $4)', 
-                [req.body['ID pawilonu'], req.body['Nazwa*'], req.body['ID typu*'], req.body['Gatunek*']]
-            );
+        try {
+            pool.query("SELECT setval('schronisko." + tableName + "_" + idFieldName + "_seq', " + max + ")");
         }
-        catch (err)
-        {
-            res.render("error", { msg : err});
+        catch (err) {
+            console.log("Nie udało się ustawić sekwencji. " + err);
+        }
+        return max+1;
+    }
+
+    pawilony = async (req, res) => {
+        let key = req.body['ID pawilonu'];
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_pawilonu", "pawilony");
+                await pool.query(
+                    "INSERT INTO schronisko.pawilony (nazwa, id_typu, gatunek) VALUES ($1, $2, $3)",
+                    [req.body['Nazwa*'], req.body['ID typu*'], req.body['Gatunek*']]
+                );
+            }
+            else {
+                await pool.query(
+                    'INSERT INTO schronisko.pawilony (id_pawilonu, nazwa, id_typu, gatunek) VALUES ($1, $2, $3, $4)',
+                    [key, req.body['Nazwa*'], req.body['ID typu*'], req.body['Gatunek*']]
+                );
+            }
+        }
+        catch (err) {
+            res.render("error", { msg: err });
             return;
         }
 
-        res.render("success", 
+        res.render("success",
         {
-            msg: "Pomyślnie dodano nowy pawilon (ID = " + req.body['ID pawilonu'] + ")",
+            msg: "Pomyślnie dodano nowy pawilon (ID = " + key + ")",
             hint: "Pawilon nie zawiera obcnie żdnych boksów. Dodaj je poprzez Wstawianie/Nowy boks.",
-            anotherOne : "/insert/pawilony"
-        });
-
-        let table = await pool.query(
-            'SELECT \
-            id_pawilonu AS "ID", \
-            nazwa AS "Nazwa", \
-            typ AS "Typ", \
-            gatunek AS "Gatunek" \
-            FROM schronisko.pawilony'
-        )
-        res.render("browse", {
-            data : table, 
-            title : "Pawilony"
+            anotherOne: "/insert/pawilony"
         });
     }
 
     boksy = async (req, res) => {
-        let customKey = req.body['ID boksu'];
-        try
-        {
-            if(customKey == "") 
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.boksy (numer, ilosc_miejsc, id_pawilonu) VALUES ($1, $2, $3)', 
-                    [req.body['Numer'], req.body['Ilość miejsc'], req.body['ID pawilonu']]
+        let key = req.body['ID boksu'];
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_boksu", "boksy");
+                await pool.query(
+                    "INSERT INTO schronisko.boksy (numer, ilosc_miejsc, id_pawilonu) VALUES ($1, $2, $3)",
+                    [req.body['Numer*'], req.body['Ilość miejsc*'], req.body['ID pawilonu*']]
                 );
             }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.boksy (id_boksu, numer, ilosc_miejsc, id_pawilonu) VALUES ($1, $2, $3, $4)', 
-                    [req.body['ID boksu'], req.body['Numer'], req.body['Ilość miejsc'], req.body['ID pawilonu']]
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.boksy (id_boksu, numer, ilosc_miejsc, id_pawilonu) VALUES ($1, $2, $3, $4)",
+                    [key, req.body['Numer*'], req.body['Ilość miejsc*'], req.body['ID pawilonu*']]
                 );
             }
         }
-        catch (err)
-        {
-            res.render("error", { msg : err});
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
         }
 
-        let table = await pool.query(
-            'SELECT * \
-            FROM schronisko.boksy'
-        )
-        res.render("browse", {
-            data : table, 
-            title : "Boksy"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowy boks (ID = " + key + ")",
+            anotherOne: "/insert/boksy"
         });
     }
 
     klienci = async (req, res) => {
-        let customKey = req.body['ID klienta'];
-        try
-        {
-            if(customKey == "") 
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.klienci (imie, nazwisko, ulica, kod_pocztowy, miejscowosc, pesel) \
-                     VALUES ($1, $2, $3, $4, $5, $6)', 
-                    [req.body['Imię'], req.body['Nazwisko'], req.body['Ulica'], 
-                    req.body['Kod pocztowy'], req.body['Miejscowość'], req.body['PESEL']]
+        let key = req.body['ID klienta'];
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_klienta", "klienci");
+                await pool.query(
+                    "INSERT INTO schronisko.klienci (imie, nazwisko, ulica, kod_pocztowy, miejscowosc, pesel) \
+                     VALUES ($1, $2, $3, $4, $5, $6)",
+                    [ 
+                        req.body['Imię*'], 
+                        req.body['Nazwisko*'], 
+                        req.body['Ulica*'],
+                        req.body['Kod pocztowy*'],
+                        req.body['Miejscowość*'],
+                        req.body['PESEL*'],
+                    ]
                 );
             }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.klienci (id_klienta, imie, nazwisko, ulica, kod_pocztowy, miasto, pesel) \
-                     VALUES ($1, $2, $3, $4, $5, $6, $7)', 
-                     [req.body['ID klienta'], req.body['Imię'], req.body['Nazwisko'], req.body['Ulica'], 
-                     req.body['Kod pocztowy'], req.body['Miejscowość'], req.body['PESEL']]
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.klienci (id_klienta, imie, nazwisko, ulica, kod_pocztowy, miejscowosc, pesel) \
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [ 
+                        key,
+                        req.body['Imię*'], 
+                        req.body['Nazwisko*'], 
+                        req.body['Ulica*'],
+                        req.body['Kod pocztowy*'],
+                        req.body['Miejscowość*'],
+                        req.body['PESEL*'],
+                    ]
                 );
             }
         }
-        catch (err)
-        {
-            res.render("error", { msg : err});
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
         }
 
-        let result = await pool.query('SELECT \
-            id_klienta AS "ID", \
-            imie AS "Imię", \
-            nazwisko AS "Nazwisko", \
-            CONCAT(ulica, \', \', kod_pocztowy, \' \', miasto) AS "Adres", \
-            pesel AS "PESEL" \
-            FROM schronisko.klienci'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Klienci"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowego klienta (ID = " + key + ")",
+            anotherOne: "/insert/klienci"
         });
     }
 
     magazyn = async (req, res) => {
-        let customKey = req.body['ID przedmiotu'];
-        try
-        {
-            if(customKey == "") 
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.magazyn (nazwa, ilosc, min_ilosc) VALUES ($1, $2, $3)', 
-                    [req.body['Nazwa'], req.body['Ilość'], req.body['Minimalna ilość']]
+        let key = req.body['ID przedmiotu'];
+        if (req.body["Minimalna ilość"] == "") req.body["Minimalna ilość"] = null;
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_przedmiotu", "magazyn");
+                await pool.query(
+                    "INSERT INTO schronisko.magazyn (nazwa, ilosc, min_ilosc) \
+                     VALUES ($1, $2, $3)",
+                    [ 
+                        req.body['Nazwa*'], 
+                        req.body['Ilość*'], 
+                        req.body['Minimalna ilość']
+                    ]
                 );
             }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.magazyn (id_przedmiotu, nazwa, ilosc, min_ilosc) VALUES ($1, $2, $3)', 
-                    [req.body['ID przedmiotu'], req.body['Nazwa'], req.body['Ilość'], req.body['Minimalna ilość']]
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.magazyn (id_przedmiotu, nazwa, ilosc, min_ilosc) \
+                     VALUES ($1, $2, $3, $4)",
+                    [ 
+                        key,
+                        req.body['Nazwa*'], 
+                        req.body['Ilość*'], 
+                        req.body['Minimalna ilość']
+                    ]
                 );
             }
         }
-        catch (err)
-        {
-            res.render("error", { msg : err});
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
         }
 
-        let result = await pool.query(
-            'SELECT \
-            id_przedmiotu AS "ID", \
-            nazwa AS "Nazwa", \
-            ilosc AS "Ilość", \
-            min_ilosc AS "Minimalna ilość" \
-            FROM schronisko.magazyn'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Magazyn"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowy przedmiot (ID = " + key + ")",
+            hint : "Jeżeli nie podano min. ilośći to wynosi ona 0",
+            anotherOne: "/insert/magazyn"
         });
     }
 
     zapotrzebowanie = async (req, res) => {
-        try
-        {
-            let result = await pool.query(
-                'INSERT INTO schronisko.zapotrzebowanie (id_wpisu, id_przedmiotu, ilosc) VALUES ($1, $2, $3)', 
-                [req.body['ID wpisu (zwierzęcia)'], req.body['ID przedmiotu'], req.body['Ilość']]
-            );
-        }
-        catch (err)
-        {
-            res.render("error", { msg : err});
-        }
-
-        let result = await pool.query(
-            'SELECT \
-            id_wpisu AS "ID wpisu", \
-            id_przedmiotu AS "ID przedmiotu", \
-            ilosc as "Ilość" \
-            FROM schronisko.zapotrzebowanie'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Zapotrzebowanie"
-        });
-    }
-
-    kontrahenci = async (req, res) => {
-        let customKey = req.body['ID kontrahenta'];
-        try
-        {
-            if(customKey == "") 
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.kontrahenci (nazwa, nip) VALUES ($1, $2)', 
-                    [req.body['Nazwa'], req.body['NIP']]
-                );
-            }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.kontrahenci (id_kontrahenta, nazwa, nip) VALUES ($1, $2, $3)', 
-                    [req.body['ID kontrahenta'], req.body['Nazwa'], req.body['NIP']]
-                );
-            }
-        }
-        catch (err)
-        {
-            res.render("error", { msg : err});
-        }
-
-        let result = await pool.query(
-            'SELECT \
-            id_kontrahenta AS "ID", \
-            nazwa AS "Nazwa", \
-            nip AS "NIP" \
-            FROM schronisko.kontrahenci'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Kontrahenci"
-        });
-    }
-
-    zamowienia = async (req, res) => {
-        let customKey = req.body['ID zamówienia'];
-        try
-        {
-            if(customKey == "") 
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.zamowienia (id_kontrahenta, id_przedmiotu, ilosc, kwota) VALUES ($1, $2, $3, $4)', 
-                    [req.body['ID kontrahenta'], req.body['ID przedmiotu'], req.body['Ilość'], req.body['Kwota']*100]
-                );
-            }
-            else
-            {
-                let result = await pool.query(
-                    'INSERT INTO schronisko.zamowienia (id_zamowienia, id_kontrahenta, id_przedmiotu, ilosc, kwota) VALUES ($1, $2, $3, $4, $5)', 
-                    [req.body['ID zamówienia'], req.body['ID kontrahenta'], req.body['ID przedmiotu'], req.body['Ilość'], req.body['Kwota']*100]
-                );
-            }
-        }
-        catch (err)
-        {
-            res.render("error", { msg : err});
-        }
-
-        let result = await pool.query(
-            'SELECT \
-            id_zamowienia AS "ID zamówienia", \
-            id_kontrahenta AS "ID kontrahenta", \
-            id_przedmiotu AS "ID przedmiotu", \
-            ilosc AS "Ilosc", \
-            CAST(kwota / 100.0 AS NUMERIC(10,2)) AS "Kwota", \
-            CASE WHEN zrealizowano THEN \'tak\' \
-            ELSE \'nie\' END AS "Zrealizowano" \
-            FROM schronisko.zamowienia'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Zamówienia"
-        });
-    }
-
-    personel = async (req, res) => {
-        let values = req.body;
-        if(values["PESEL"] == "") {
-            values["PESEL"] = null;
-        }
         try {
-            let result = await pool.query (
-                'INSERT INTO schronisko.personel\
-                 (id_pracownika, imie, nazwisko, pesel, stanowisko, pensja) VALUES \
-                 ($1, $2, $3, $4, $5, $6)',
-                [
-                    values["ID pracownika"],
-                    values["Imię"],
-                    values["Nazwisko"],
-                    values["PESEL"],
-                    values["Stanowisko"],
-                    values["Pensja"]*100
+            await pool.query(
+                "INSERT INTO schronisko.zapotrzebowanie (id_wpisu, id_przedmiotu, ilosc) \
+                 VALUES ($1, $2, $3)",
+                [ 
+                    req.body['ID wpisu (zwierzęcia)*'], 
+                    req.body['ID przedmiotu*'], 
+                    req.body['Ilość*']
                 ]
             );
         }
         catch (err) {
-            res.render("error", { msg : err});
+            res.render("error", { msg: err });
+            return;
         }
 
-        let result = await pool.query(
-            'SELECT \
-                id_pracownika AS "ID", \
-                imie AS "Imię", \
-                nazwisko AS "Nazwisko", \
-                pesel AS "PESEL", \
-                stanowisko AS "Stanowisko", \
-                CAST(pensja / 100.00 AS NUMERIC(10,2)) AS "Pensja" \
-            FROM schronisko.personel'
-        )
-        res.render("browse", {
-            data : result,  
-            title : "Personel"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano zapotrzebowanie",
+            hint: "Zaktualizowano minimalną ilość tego przedmiotu w magazynie.",
+            anotherOne: "/insert/zapotrzebowanie"
+        });
+    }
+
+    kontrahenci = async (req, res) => {
+        let key = req.body['ID kontrahenta'];
+        if (req.body["NIP"] == "") req.body["NIP"] = null;
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_kontrahenta", "kontrahenci");
+                await pool.query(
+                    "INSERT INTO schronisko.kontrahenci (nazwa, nip) \
+                     VALUES ($1, $2)",
+                    [ 
+                        req.body['Nazwa*'], 
+                        req.body['NIP']
+                    ]
+                );
+            }
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.magazyn (id_kontrahenta, nazwa, nip) \
+                     VALUES ($1, $2, $3)",
+                    [ 
+                        key,
+                        req.body['Nazwa*'], 
+                        req.body['NIP']
+                    ]
+                );
+            }
+        }
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
+        }
+
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowego kontrahenta (ID = " + key + ")",
+            anotherOne: "/insert/kontrahenci"
+        });
+    }
+
+    zamowienia = async (req, res) => {
+        let key = req.body['ID zamówienia'];
+        try {
+            if (key == "") {
+                key = await this.fixSequence("id_zamowienia", "zamowienia");
+                await pool.query(
+                    "INSERT INTO schronisko.zamowienia (id_kontrahenta, id_przedmiotu, ilosc, kwota) \
+                     VALUES ($1, $2, $3, $4)",
+                    [ 
+                        req.body["ID kontrahenta*"], 
+                        req.body["ID przedmiotu*"],
+                        req.body["Ilość*"],
+                        req.body["Kwota*"] * 100
+                    ]
+                );
+            }
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.zamowienia (id_zamowienia, id_kontrahenta, id_przedmiotu, ilosc, kwota) \
+                     VALUES ($1, $2, $3, $4, $5)",
+                    [ 
+                        key,
+                        req.body["ID kontrahenta*"], 
+                        req.body["ID przedmiotu*"],
+                        req.body["Ilość*"],
+                        req.body["Kwota*"]
+                    ]
+                );
+            }
+        }
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
+        }
+
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowe zamówienie (ID = " + key + ")",
+            anotherOne: "/insert/zamowienia"
+        });
+    }
+
+    personel = async (req, res) => {
+        let key = req.body['ID pracownika'];
+        for (const key in req.body) {
+            if (req.body[key] == "") req.body[key] = null
+        }
+        try {
+            
+            if (key == "") {
+                key = await this.fixSequence("id_pracownika", "personel");
+                await pool.query(
+                    "INSERT INTO schronisko.personel (imie, nazwisko, pesel, stanowisko, pensja) \
+                     VALUES ($1, $2, $3, $4, $5)",
+                    [ 
+                        req.body["Imię*"], 
+                        req.body["Nazwisko*"],
+                        req.body["PESEL"],
+                        req.body["Stanowisko*"],
+                        req.body["Pensja"] * 100
+                    ]
+                );
+            }
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.personel (id_pracownika, imie, nazwisko, pesel, stanowisko, pensja) \
+                     VALUES ($1, $2, $3, $4, $5, $6)",
+                    [ 
+                        key,
+                        req.body["Imię*"], 
+                        req.body["Nazwisko*"],
+                        req.body["PESEL"],
+                        req.body["Stanowisko*"],
+                        req.body["Pensja"] * 100
+                    ]
+                );
+            }
+        }
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
+        }
+
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowego pracownika (ID = " + key + ")",
+            anotherOne: "/insert/personel"
         });
     }
 
     personelToPawilony = async (req, res) => {
         let values = req.body;
         try {
-            let result = await pool.query (
+            let result = await pool.query(
                 'INSERT INTO schronisko.personel_to_pawilony\
                  (id_pracownika, id_pawilonu) VALUES \
                  ($1, $2)',
@@ -323,7 +335,7 @@ class PostInsertController {
             );
         }
         catch (err) {
-            res.render("error", { msg : err});
+            res.render("error", { msg: err });
         }
 
         let result = await pool.query(
@@ -333,92 +345,105 @@ class PostInsertController {
             FROM schronisko.personel_to_pawilony'
         )
         res.render("browse", {
-            data : result, 
-            title : "Personel -> Pawilony"
+            data: result,
+            title: "Personel -> Pawilony"
         });
     }
 
     zwierzeta = async (req, res) => {
-        let values = req.body;
-        if(values["Data urodzenia"] == "") {
-            values["Data urodzenia"] = null;
+        let key = req.body['ID zwierzęcia'];
+        for (const key in req.body) {
+            if (req.body[key] == "") req.body[key] = null
         }
-        if(values["Rasa"] == "") {
-            values["Rasa"] = null;
+        try {
+            
+            if (key == "") {
+                key = await this.fixSequence("id_zwierzecia", "zwierzeta");
+                await pool.query(
+                    "INSERT INTO schronisko.zwierzeta (imie, gatunek, rasa, data_urodzenia) \
+                     VALUES ($1, $2, $3, $4)",
+                    [ 
+                        req.body["Imię*"], 
+                        req.body["Gatunek*"],
+                        req.body["Rasa"],
+                        req.body["Data urodzenia"]
+                    ]
+                );
+            }
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.zwierzeta (id_zwierzecia, imie, gatunek, rasa, data_urodzenia) \
+                     VALUES ($1, $2, $3, $4, $5)",
+                    [ 
+                        key,
+                        req.body["Imię*"], 
+                        req.body["Gatunek*"],
+                        req.body["Rasa"],
+                        req.body["Data urodzenia"]
+                    ]
+                );
+            }
         }
-        try
-        {
-            let result = await pool.query(
-                'INSERT INTO schronisko.zwierzeta \
-                (id_zwierzecia, gatunek, rasa, imie, data_urodzenia) VALUES \
-                ($1, $2, $3, $4, $5)',
-                [
-                    values["ID zwierzęcia"], 
-                    values["Gatunek"], 
-                    values["Rasa"], 
-                    values["Imię"], 
-                    values["Data urodzenia"]
-                ]
-            );
-        }
-        catch (err)
-        {
-            res.render("error", { msg : err});
+        catch (err) {
+            res.render("error", { msg: err });
+            return;
         }
 
-        let result = await pool.query(
-            'SELECT \
-            id_zwierzecia AS "ID", \
-            imie AS "Imię", \
-            gatunek AS "Gatunek", \
-            rasa AS "Rasa", \
-            data_urodzenia AS "Data urodzenia" \
-            FROM schronisko.zwierzeta'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Zwierzęta"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowe zwierzę (ID = " + key + ")",
+            hint : "UWAGA: Spójność bazy została naruszona. Nazeży dodać wpis tego zwierzęcia za pomocą formularza \"Nowy wpis zwierzęcia\".",
+            anotherOne: "/insert/zwierzeta"
         });
     }
 
     zwierzetaInfo = async (req, res) => {
-        let values = req.body;
-        if( values["Data przyjęcia"] == ""){
-            values["Data przyjęcia"] = "NOW()";
+        let key = req.body['ID wpisu'];
+        for (const key in req.body) {
+            if (req.body[key] == "") req.body[key] = null
         }
         try {
-            let result = await pool.query (
-                'INSERT INTO schronisko.zwierzeta_info\
-                 (id_wpisu, id_zwierzecia, data_przyjecia, id_boksu, uwagi) VALUES \
-                 ($1, $2, $3, $4, $5)',
-                [
-                    values["ID wpisu"],
-                    values["ID zwierzęcia"],
-                    values["Data przyjęcia"],
-                    values["ID boksu"],
-                    values["Uwagi"]
-                ]
-            );
+            
+            if (key == "") {
+                key = await this.fixSequence("id_wpisu", "zwierzeta_info");
+                await pool.query(
+                    "INSERT INTO schronisko.zwierzeta_info (id_zwierzecia, data_przyjecia, id_boksu, uwagi, data_adopcji, id_klienta) \
+                     VALUES ($1, $2, $3, $4, $5, $6)",
+                    [ 
+                        req.body["ID zwierzęcia*"], 
+                        req.body["Data przyjęcia*"],
+                        req.body["ID boksu*"],
+                        req.body["Uwagi"],
+                        req.body["Data adopcji"],
+                        req.body["ID klienta"]
+                    ]
+                );
+            }
+            else {
+                await pool.query(
+                    "INSERT INTO schronisko.zwierzeta_info (id_wpisu, id_zwierzecia, data_przyjecia, id_boksu, uwagi, data_adopcji, id_klienta) \
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [ 
+                        key,
+                        req.body["ID zwierzęcia*"],
+                        req.body["Data przyjęcia*"],
+                        req.body["ID boksu*"],
+                        req.body["Uwagi"],
+                        req.body["Data adopcji"],
+                        req.body["ID klienta"]
+                    ]
+                );
+            }
         }
         catch (err) {
-            res.render("error", { msg : err });
+            res.render("error", { msg: err });
+            return;
         }
 
-        let result = await pool.query(
-            'SELECT \
-            id_wpisu AS "ID", \
-            id_zwierzecia AS "ID zwierzęcia", \
-            data_przyjecia AS "Data przyjęcia", \
-            id_boksu AS "ID boksu", \
-            uwagi AS "Uwagi", \
-            data_adopcji AS "Data adopcji", \
-            id_klienta AS "ID klienta" \
-            FROM schronisko.zwierzeta_info \
-            ORDER BY id_wpisu'
-        )
-        res.render("browse", {
-            data : result, 
-            title : "Zwierzęta Info"
+        res.render("success",
+        {
+            msg: "Pomyślnie dodano nowy wpis (ID = " + key + ")",
+            anotherOne: "/insert/zwierzeta"
         });
     }
 }
