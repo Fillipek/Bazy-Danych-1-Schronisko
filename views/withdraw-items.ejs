@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+    <div class = "container rounded-top bg-primary text-center text-light p-2 ">
+        <h1>Wydawanie przedmiotów z magazynu</h1>
+    </div>
+    <div class = "container rounded-bottom bg-light p-2 h-100">
+        <form class="centered" style="border-color: gray;" action = "/form/withdraw_items", method="POST">
+            <label for="Przedmiot">Przedmiot*</label>
+                <div class="input-group mb-3">
+                    <select class="custom-select" name = "id_przedmiotu">
+                        <option selected>Wybierz...</option>
+                        <% items.rows.forEach(item => { %>
+                            <option value=<%=item.id_przedmiotu%>><%=item.nazwa%> - Ilość: <%=item.ilosc%></option>
+                        <% }) %>
+                    </select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="Ilosć">Ilość*</label>
+                    <input type="text" class="form-control" name="ilosc" pattern="[0-9]+[.]?[0-9]*">
+                </div>
+                <small id="Hint" class="form-text text-muted">* Wymagane</small> <br>
+                <button type="submit" class="btn btn-lg center btn-success">Wydaj</button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,5 +1,4 @@
 class AboutController {
-    x = 2;
     render = (req, res) => {
         res.render("about");
     }

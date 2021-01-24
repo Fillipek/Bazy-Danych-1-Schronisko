@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("head")%>
+</head>
+
+<body>
+    <%- include("navbar")%>
+
+    <div class = "container rounded-top bg-primary text-center text-light p-2 ">
+        <h1>Finalizacja zamówień</h1>
+    </div>
+    <div class = "container rounded-bottom bg-light p-2 h-100">
+        <table class="table text-dark">
+            <thead>
+                <tr>
+                    <th>ID zamówienia</th>
+                    <th>ID kontrahenta</th>
+                    <th>Przedmiot</th>
+                    <th>Ilość</th>
+                    <th>Kwota (PLN)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+               <% orders.rows.forEach(order => { %>
+                    <tr>
+                        <td><%= order.id_zamowienia%></td>
+                        <td><%= order.id_kontrahenta%></td>
+                        <td><%= order.nazwa%></td>
+                        <td><%= order.ilosc%></td>
+                        <td><%= order.kwota%></td>
+                        <form action="/form/finalize_orders" method="POST">
+                            <td><button name="id_zamowienia" value="<%= order.id_zamowienia%>" type="submit" class="btn center btn-success">Finalizuj</button></td>
+                        </form>
+                    </tr>
+               <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

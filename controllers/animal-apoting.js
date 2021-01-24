@@ -1,13 +1,13 @@
 const pool = require("../database-connection")
 
 class AdoptAnimal {
-    pageSelectAnimal = async (req, res) => {
+    showAvailableAnimals = async (req, res) => {
         try
         {
             let adoptables = await pool.query(
                 "SELECT id_wpisu, imie, gatunek, rasa, data_urodzenia, data_przyjecia, uwagi FROM schronisko.zwierzeta \
-                 NATURAL JOIN schronisko.zwierzeta_info NATURAL JOIN schronisko.boksy NATURAL JOIN schronisko.pawilony \
-                 WHERE data_adopcji IS NULL"
+                 NATURAL JOIN schronisko.zwierzeta_info NATURAL JOIN schronisko.boksy NATURAL JOIN (schronisko.pawilony JOIN schronisko.typ_pawilonu USING(id_typu))\
+                 WHERE data_adopcji IS NULL AND mozliwosc_adopcji"
             );
             let species = await pool.query(
                 "SELECT DISTINCT gatunek FROM schronisko.zwierzeta NATURAL JOIN schronisko.zwierzeta_info WHERE data_adopcji IS NULL"
@@ -24,7 +24,7 @@ class AdoptAnimal {
         
     }
 
-    pageSelectClient = async (req, res) => {
+    showOrInsertClient = async (req, res) => {
         try
         {
             let customers = await pool.query(
@@ -34,7 +34,6 @@ class AdoptAnimal {
                 id_wpisu : req.body.id_wpisu,
                 klienci : customers
             })
-            // res.send(customers);
         }
         catch(err)
         {
@@ -42,7 +41,7 @@ class AdoptAnimal {
         }
     }
 
-    postForm = async (req, res) => {
+    finalizeForm = async (req, res) => {
 
         if(typeof req.body.id_klienta === 'undefined')
         {

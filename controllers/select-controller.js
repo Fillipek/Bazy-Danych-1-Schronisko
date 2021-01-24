@@ -160,8 +160,7 @@ class SelectController {
             id_przedmiotu AS "ID przedmiotu", \
             ilosc AS "Ilosc", \
             CAST(kwota / 100.0 AS NUMERIC(10,2)) AS "Kwota", \
-            CASE WHEN zrealizowano THEN \'tak\' \
-            ELSE \'nie\' END AS "Zrealizowano" \
+            data_realizacji AS "Data realizacji" \
             FROM schronisko.zamowienia'
         )
         res.render("browse", {
